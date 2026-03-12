@@ -64,9 +64,9 @@ public class PlayerPlatform : MonoBehaviour
         }
 
         // Better jump control - cut jump short if button released
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
+        if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpCutMultiplier);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
         }
 
         // Update animations
@@ -91,7 +91,7 @@ public class PlayerPlatform : MonoBehaviour
     void Move()
     {
         float targetSpeed = horizontalInput * moveSpeed;
-        float speedDiff = targetSpeed - rb.velocity.x;
+        float speedDiff = targetSpeed - rb.linearVelocity.x;
         float accelerationRate = (Mathf.Abs(targetSpeed) > 0.01f) ?
             (isGrounded ? groundAcceleration : airAcceleration) :
             (isGrounded ? groundDeceleration : airDeceleration);
@@ -113,7 +113,7 @@ public class PlayerPlatform : MonoBehaviour
         if (isJumping)
         {
             // Apply jump force
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             isJumping = false;
         }
     }
@@ -121,15 +121,15 @@ public class PlayerPlatform : MonoBehaviour
     void ApplyBetterGravity()
     {
         // Makes jumping feel less floaty
-        if (rb.velocity.y < 0)
+        if (rb.linearVelocity.y < 0)
         {
             // Falling down - apply fall multiplier
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
-        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
         {
             // Jump button released early - apply low jump multiplier
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
         }
     }
 
@@ -178,7 +178,7 @@ public class PlayerPlatform : MonoBehaviour
         {
             animator.SetBool(IsRunning, Mathf.Abs(horizontalInput) > 0.1f);
             animator.SetBool(IsGrounded, isGrounded);
-            animator.SetFloat(VerticalVelocity, rb.velocity.y);
+            animator.SetFloat(VerticalVelocity, rb.linearVelocity.y);
         }
     }
 
