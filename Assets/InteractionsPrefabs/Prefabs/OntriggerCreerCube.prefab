@@ -123,4 +123,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EndroitOuSpawner: {fileID: 0}
   ObjetACreer: {fileID: 0}
-  TagDeObjetACreer: Player
+  TagDeObjetADetecter: Player
