@@ -5,23 +5,43 @@ namespace ABCodeworld.Examples
 
     public class DoorControllerExample : MonoBehaviour
     {
-        [HideInInspector, SerializeField] public SpriteRenderer spaceHint; // This sprite will be shown as a hint
-
-        private OmniDoor3DController dc; // Door controller I want to use
+        [HideInInspector, SerializeField] public SpriteRenderer spaceHint;
+        [SerializeField] private OmniDoor3DController dc;
+        private bool playerNearby = false;
+	private bool doorOpen = false; // ADD THIS
 
         private void Awake()
-        {
-            dc = GetComponent<OmniDoor3DController>();
-        }
+	{
+    if (dc == null) Debug.LogError("Dc slot is empty — drag OmniDoor3DController object into the Inspector 	slot!");
+    	else Debug.Log("DoorController: dc assigned OK!");
+	}
 
-        // These methods are called from the buttons in this script's component foldout in the Unity editor's Inspector window. You can directly control doors from your own code using event invocations
-        // like below. See ExampleInspector.cs for how the button are set up. You do not need buttons, they are for convenience in this example scenario.
-        // Without buttons you can just invoke the events whenever it's appropriate in your own logic.
+        private void Update()
+	{
+	    if (playerNearby && Input.GetKeyDown(KeyCode.E))
+	    {
+ 	       if (!KeyPickup.hasKey)
+  	      {
+   	         Debug.Log("The door is locked! Find the key first.");
+  	          return;
+        }
+ 	       if (doorOpen)
+ 	       {
+ 	           CloseDoor();
+ 	           doorOpen = false;
+  	      }
+  	      else
+  	      {
+  	          OpenDoor();
+  	          doorOpen = true;
+  	      }
+  	  }
+	}
+
         public void OpenDoor()
         {
             dc.OpenDoor?.Invoke();
         }
-
         public void CloseDoor()
         {
             dc.CloseDoor?.Invoke();
@@ -37,25 +57,27 @@ namespace ABCodeworld.Examples
             dc.UnlockDoor?.Invoke();
         }
 
-        // These methods are part of a simple interaction system where the player can press a key to open and close the controlled door(s). (See PlayerOrbital.cs for the input code)
-        // I do not recommend doing your UI as sprites in world space - this is a very specific use case made for the example scene.
-
         private void OnTriggerEnter(Collider other)
         {
+            Debug.Log("DoorController: Something entered trigger: " + other.gameObject.name + " | Tag: " + other.tag);
             if (!other.CompareTag("Player"))
                 return;
-
-            spaceHint.enabled = true; // Show UI prompt
-            other.GetComponent<PlayerOrbital>().doorController = dc; // Give a controller ref to the player script so the input code can use it
+            playerNearby = true;
+            Debug.Log("DoorController: Player entered! playerNearby = true");
+            if (spaceHint != null) spaceHint.enabled = true;
+            PlayerOrbital po = other.GetComponent<PlayerOrbital>();
+            if (po != null) po.doorController = dc;
         }
 
         private void OnTriggerExit(Collider other)
         {
             if (!other.CompareTag("Player"))
                 return;
-
-            spaceHint.enabled = false; // Hide UI prompt
-            other.GetComponent<PlayerOrbital>().doorController = null; // Clear ref
+            playerNearby = false;
+            Debug.Log("DoorController: Player exited! playerNearby = false");
+            if (spaceHint != null) spaceHint.enabled = false;
+            PlayerOrbital po = other.GetComponent<PlayerOrbital>();
+            if (po != null) po.doorController = null;
         }
     }
 }
