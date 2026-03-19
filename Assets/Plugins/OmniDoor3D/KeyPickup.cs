@@ -10,8 +10,17 @@ namespace ABCodeworld.Examples
         {
             if (!other.CompareTag("Player"))
                 return;
+
             hasKey = true;
             Debug.Log("Key picked up!");
+
+            if (Inventory.instance == null)
+            {
+                Debug.LogError("Inventory instance is null! Make sure Inventory script is on the Player.");
+                return;
+            }
+
+            Inventory.instance.AddItem("Key");
             gameObject.SetActive(false);
         }
     }
