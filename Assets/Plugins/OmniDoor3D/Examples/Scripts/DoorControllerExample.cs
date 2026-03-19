@@ -20,11 +20,11 @@ namespace ABCodeworld.Examples
 	{
 	    if (playerNearby && Input.GetKeyDown(KeyCode.E))
 	    {
- 	       if (!Inventory.instance.HasItem("Key"))
-	{
-	    Debug.Log("The door is locked! Find the key first.");
-	    return;
-	}
+ 	       if (!KeyPickup.hasKey)
+  	      {
+   	         Debug.Log("The door is locked! Find the key first.");
+  	          return;
+        }
  	       if (doorOpen)
  	       {
  	           CloseDoor();
